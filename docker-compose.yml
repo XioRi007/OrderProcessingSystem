@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  db:
+    container_name: mongo
+    build: ./mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example  
+  server:
+    container_name: stock_server
+    build: ./server
+    links:
+      - db
+    ports:
+      - 5000:5000  
+  client:
+    container_name: stock_client
+    build: ./client
+    links:
+        - server
+    ports:
+      - 3000:3000
