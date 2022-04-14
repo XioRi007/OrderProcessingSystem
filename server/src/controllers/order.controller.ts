@@ -40,7 +40,12 @@ export class OrderController {
     {description: 'an array of orders', required: true}    )
     order: Order[],
   ): Promise<Order[]> {
-    return await this.orderRepository.createAll(order);
+    const res = await this.orderRepository.createAll(order);
+    
+    order.forEach((e,i)=>{
+      console.log(JSON.stringify(e));
+    })
+    return res;
   }
 
   @get('/orders/count')

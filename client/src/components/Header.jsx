@@ -43,11 +43,8 @@ function Header() {
             body+=JSON.stringify({...order, general_price:parseFloat(faker.finance.amount())})+",";
             orders.push(order);
           }
-          console.log(body.charAt(body.length-1));
           body = body.replaceAt(body.length-1,"]");
           await request(`/orders`, "POST", body);
-          //setChanged(true);
-          console.log("HERE");
           setChanged(true);
           notify("Generation successful");
           setCount(1);

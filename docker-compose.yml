@@ -11,6 +11,8 @@ services:
   server:
     container_name: stock_server
     build: ./server
+    environment:
+      MONGO_LINK: mongodb://root:example@mongo:27017
     links:
       - db
     ports:
@@ -18,6 +20,8 @@ services:
   client:
     container_name: stock_client
     build: ./client
+    environment:
+      SERVER: http://stock_server:5000/
     links:
         - server
     ports:

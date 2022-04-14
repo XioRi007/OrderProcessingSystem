@@ -23,7 +23,6 @@ function MainPage() {
     async function fetchData(){
       try{
         if(changed){
-            console.log("here");
           const response = await request(`/orders`);
             setList(response);
             setChanged(false);                
