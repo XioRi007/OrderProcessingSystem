@@ -19,6 +19,12 @@ import {
 } from '@loopback/rest';
 import {Order} from '../models';
 import {OrderRepository} from '../repositories';
+var AWS = require('aws-sdk');
+AWS.config.update({region: 'REGION',accessKeyId: "AKIAQNO2VL4XJ5JQP5QF",
+secretAccessKey: "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"});
+
+var sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+
 
 export class OrderController {
   constructor(
@@ -26,27 +32,45 @@ export class OrderController {
     public orderRepository : OrderRepository,
   ) {}
 
-  @post('/orders')
-  @response(200, {
-    description: 'Order model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Order)}},
+@post('/orders', {
+  responses: {
+    '200': {
+      description: 'Todo model instance',
+      content: {'application/json': {schema: getModelSchemaRef(Order)}},
+    },
+  },
+})
+async create(
+  @requestBody({
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Order, {title: 'NewOrder', exclude: ['_id']}),
+      },
+    },
   })
-  async create(
-    @requestBody.array(
-      getModelSchemaRef(Order, {
-          title: 'NewOrder',
-          exclude: ['_id'],        
-      }),
-    {description: 'an array of orders', required: true}    )
-    order: Order[],
-  ): Promise<Order[]> {
-    const res = await this.orderRepository.createAll(order);
-    
-    order.forEach((e,i)=>{
-      console.log(JSON.stringify(e));
-    })
-    return res;
-  }
+  order: Omit<Order, "_id">,
+) {
+  const res = await this.orderRepository.create(order);
+  var params = {
+    DelaySeconds: 0,
+    MessageAttributes: {},
+    MessageBody: JSON.stringify(order),
+      MessageGroupId: "Group1",  
+    QueueUrl: "https://sqs.us-east-1.amazonaws.com/028912738094/test-que.fifo"
+  };
+  
+  sqs.sendMessage(params, (err:Error)=>{
+    if(err){
+      console.log(err);
+      
+      return err;
+    }
+    else{
+      return res; 
+    }
+    }); 
+}
+
 
   @get('/orders/count')
   @response(200, {

@@ -18,8 +18,6 @@ function Header() {
             notify_error("Enter the number >= 1");
             return;
           }
-          let orders = [];
-          let body = "[";
           for(let i = 0; i < count; i++){
             const order = {
               address: faker.address.country() +", "+ faker.address.city() + ", "+ faker.address.streetName()+" Street",
@@ -40,12 +38,10 @@ function Header() {
                 });
               }        
             }
-            body+=JSON.stringify({...order, general_price:parseFloat(faker.finance.amount())})+",";
-            orders.push(order);
+            await request(`/orders`, "POST", JSON.stringify({...order, general_price:parseFloat(faker.finance.amount())}));            
+            setChanged(true);
           }
-          body = body.replaceAt(body.length-1,"]");
-          await request(`/orders`, "POST", body);
-          setChanged(true);
+          
           notify("Generation successful");
           setCount(1);
     
