@@ -56,7 +56,7 @@ async create(
     MessageAttributes: {},
     MessageBody: JSON.stringify(order),
       MessageGroupId: "Group1",  
-    QueueUrl: "https://sqs.us-east-1.amazonaws.com/028912738094/test-que.fifo"
+    QueueUrl: process.env.QUEUE
   };
   
   sqs.sendMessage(params, (err:Error)=>{
