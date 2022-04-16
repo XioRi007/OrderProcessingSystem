@@ -20,8 +20,8 @@ import {
 import {Order} from '../models';
 import {OrderRepository} from '../repositories';
 var AWS = require('aws-sdk');
-AWS.config.update({region: 'REGION',accessKeyId: "AKIAQNO2VL4XJ5JQP5QF",
-secretAccessKey: "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"});
+AWS.config.update({region: 'REGION',accessKeyId: process.env.ACCESS_KEY,
+secretAccessKey: process.env.SECRET_KEY});
 
 var sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
@@ -56,7 +56,7 @@ async create(
     MessageAttributes: {},
     MessageBody: JSON.stringify(order),
       MessageGroupId: "Group1",  
-    QueueUrl: process.env.QUEUE
+    QueueUrl: process.env.QUEUE_URL
   };
   
   sqs.sendMessage(params, (err:Error)=>{
