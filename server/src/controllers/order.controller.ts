@@ -19,10 +19,11 @@ import {
 } from '@loopback/rest';
 import {Order} from '../models';
 import {OrderRepository} from '../repositories';
+//aws service
+
 var AWS = require('aws-sdk');
 AWS.config.update({region: 'REGION',accessKeyId: process.env.ACCESS_KEY,
 secretAccessKey: process.env.SECRET_KEY});
-
 var sqs = new AWS.SQS({apiVersion: '2012-11-05'});
 
 
