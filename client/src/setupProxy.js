@@ -8,4 +8,11 @@ module.exports = function(app) {
       changeOrigin: true,
     })
   );
+  app.use(
+    '/que',
+    createProxyMiddleware({
+      target: process.env.SERVER || 'http://localhost:5000/',
+      changeOrigin: true,
+    })
+  );
 };

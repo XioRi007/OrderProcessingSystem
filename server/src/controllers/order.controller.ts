@@ -1,3 +1,4 @@
+import { inject, service } from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -16,21 +17,20 @@ import {
   del,
   requestBody,
   response,
+  RestBindings,
+  Response,
 } from '@loopback/rest';
 import {Order} from '../models';
 import {OrderRepository} from '../repositories';
-//aws service
-
-var AWS = require('aws-sdk');
-AWS.config.update({region: 'REGION',accessKeyId: process.env.ACCESS_KEY,
-secretAccessKey: process.env.SECRET_KEY});
-var sqs = new AWS.SQS({apiVersion: '2012-11-05'});
+import { AwsSqsService } from '../services';
 
 
 export class OrderController {
   constructor(
     @repository(OrderRepository)
     public orderRepository : OrderRepository,
+    @service() public AwsSqsService: AwsSqsService,
+    @inject(RestBindings.Http.RESPONSE) private response: Response
   ) {}
 
 @post('/orders', {
@@ -49,29 +49,24 @@ async create(
       },
     },
   })
-  order: Omit<Order, "_id">,
-) {
-  const res = await this.orderRepository.create(order);
-  var params = {
-    DelaySeconds: 0,
-    MessageAttributes: {},
-    MessageBody: JSON.stringify(order),
-      MessageGroupId: "Group1",  
-    QueueUrl: process.env.QUEUE_URL
-  };
-  
-  sqs.sendMessage(params, (err:Error)=>{
-    if(err){
-      console.log(err);
-      
-      return err;
-    }
-    else{
-      return res; 
-    }
-    }); 
-}
+  order: Order,
+){
+  const res  = await this.orderRepository.create(order);
+  const res1 = await this.AwsSqsService.send_message(order, res._id);
+  if(!res1.ok){
+    this.response.status(400).send({
+      message: res1.message,
+    });
+  }else{
+    await this.orderRepository.updateById(res._id, {...order, status:"added"});  
+    this.response.status(204).send({
+      message: res1.message,
+    });
 
+  }
+  
+  return this.response;
+}
 
   @get('/orders/count')
   @response(200, {

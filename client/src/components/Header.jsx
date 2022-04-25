@@ -23,7 +23,7 @@ function Header() {
               address: faker.address.country() +", "+ faker.address.city() + ", "+ faker.address.streetName()+" Street",
               user_email: faker.internet.email(),
               user_name: faker.name.firstName()+" "+faker.name.lastName(),
-              status: "added"
+              status: "created"
             };
             order.products = [];
             const n = Math.floor(Math.random() * 10) + 1;
@@ -38,12 +38,12 @@ function Header() {
                 });
               }        
             }
-            await request(`/orders`, "POST", JSON.stringify({...order, general_price:parseFloat(faker.finance.amount())}));            
-            setChanged(true);
+            await request(`/orders`, "POST", JSON.stringify({...order, general_price:parseFloat(faker.finance.amount())})); 
           }
           
           notify("Generation successful");
           setCount(1);
+          setChanged(true);
     
         }catch(err){
           notify_error(err.message);
@@ -54,9 +54,12 @@ function Header() {
   return (
     <header className="navbar navbar-light navbar-green">
           <div className="container">
-              <a className="navbar-brand navbar-brand-light" href="/">      
-              Stock
-            </a>            
+            <div className="nav-links">
+              <a className="navbar-brand navbar-brand-light" href="/">Stock</a> 
+              <a className="navbar-link my-link" href="/consummer">Consummer</a> 
+            </div>
+            
+                         
             <div className="nav-item">
               <input type="number" min="1" className="numericUpDown" onChange={count_handler} value={count}/>
               <button className="btn btn-light" onClick={generate_handler}>Generate</button>

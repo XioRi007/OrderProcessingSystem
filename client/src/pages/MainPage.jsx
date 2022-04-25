@@ -2,15 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 
 
 import Loader from "../components/Loader";
-import Order from "../components/Order";
 import { toast } from 'react-toastify';
 
 import { useHttp } from "../hooks/http.hook";
 import { ChangedContext } from "../context/ChangedContext";
+import Order from "../components/Order";
 
-String.prototype.replaceAt = function(index, replacement) {
-  return this.substring(0, index) + replacement + this.substring(index + replacement.length);
-}
+
 function MainPage() {
   const [list, setList] = useState([]);
   const notify_error = (msg) => toast.error(msg);
@@ -25,7 +23,7 @@ function MainPage() {
         if(changed){
           const response = await request(`/orders`);
             setList(response);
-            setChanged(false);                
+            setChanged(false);             
         }
       }
       catch(err){
@@ -33,7 +31,7 @@ function MainPage() {
       }      
     };
     fetchData();
-    }, [changed]
+    }, [changed, setChanged, request]
   )
   const filter_onchange_handler = (e)=>{
       setFilter(e.target.value);
@@ -60,6 +58,7 @@ function MainPage() {
             <label className="input-group-text filter-label" htmlFor="inputGroupSelect04">Status</label>
             <select className="form-select select-custom" id="inputGroupSelect04" aria-label="..." value={filter} onChange={filter_onchange_handler}>
                 <option value="">All</option>
+                <option value="created">Created</option>
                 <option value="added">Added</option>
                 <option value="processed">Processed</option>
             </select>
