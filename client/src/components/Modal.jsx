@@ -1,7 +1,8 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { ChangedContext } from "../context/ChangedContext";
 import { useHttp } from "../hooks/http.hook";
-function Modal({order, onclick_handler, visible}) {
+function Modal({order, onclick_handler}) {
+    
     const { setChanged, notify_error, notify_success} = useContext(ChangedContext);
     const {request} = useHttp();  
 
@@ -12,25 +13,36 @@ function Modal({order, onclick_handler, visible}) {
         }
         return strOut
     }
+    const close_handler = useCallback( async () => {
+        try{
+            const b = stringToBinary(order.ReceiptHandle);
+            await request(`/que/${b}`,"PATCH", JSON.stringify({VisibilityTimeout:0}));
+
+        }catch(err){
+            console.log(err);
+            notify_error(err.message);
+            
+        }
+        onclick_handler();
+    }, [notify_error, request, order, onclick_handler]);
     
    
     
-    const startProcessing = useCallback( async (e) =>{
+    const startProcessing = useCallback( async () =>{
+        //if(!isVisible) return;
         try{
             const b = stringToBinary(order.ReceiptHandle);
             await request(`/que/${b}`,"PATCH", JSON.stringify({VisibilityTimeout:600}));
-
         }catch(err){
             console.log(err);
             notify_error(err.message);            
         }
+    }, [request, notify_error, order.ReceiptHandle]);
 
-    }, [request, notify_error, order]);
     useEffect(()=>{
         if(visible){
             startProcessing();
-        }
-        
+        }        
     }, [visible, startProcessing]);
     const Error = async (e) =>{
         try{
@@ -40,8 +52,7 @@ function Modal({order, onclick_handler, visible}) {
 
         }catch(err){
             console.log(err);
-            notify_error(err.message);
-            
+            notify_error(err.message);            
         }
         onclick_handler();
         setChanged(true);
@@ -70,7 +81,7 @@ function Modal({order, onclick_handler, visible}) {
                 <div className="modal-content my-modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Processing order №{order._id}</h5>
-                        <button type="button" className="btn-close" onClick={onclick_handler}></button>
+                        <button type="button" className="btn-close" onClick={close_handler}></button>
                     </div>
                     <div className="modal-body my-modal-body">
                     <table className="table table-bordered table-custom position-relative" onClick={order.onclick_handler}>

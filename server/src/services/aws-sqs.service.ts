@@ -7,7 +7,7 @@ export class AwsSqsService {
   binaryAgent;
   constructor() {    
     AWS.config.update({region: 'REGION',accessKeyId: process.env.ACCESS_KEY,
-    secretAccessKey: process.env.SECRET_KEY});
+    secretAccessKey: process.env.SECRET_KEY });
     this.sqs = new AWS.SQS({apiVersion: '2012-11-05'});
     this.binaryAgent = (str:String) => {
 
@@ -62,7 +62,7 @@ export class AwsSqsService {
         },
       },
       MessageBody: "Stock APP",
-      QueueUrl: process.env.QUEUE_URL
+      QueueUrl: process.env.QUEUE_URL 
     };
     try{
       const res = await this.sqs.sendMessage(params).promise();
@@ -123,7 +123,7 @@ export class AwsSqsService {
   }
   async changeVisibility(ReceiptHandle:String, VisibilityTimeout:number){
     var params = {
-      QueueUrl: process.env.QUEUE_URL,
+      QueueUrl: process.env.QUEUE_URL ,
       ReceiptHandle: this.binaryAgent(ReceiptHandle),
       VisibilityTimeout: VisibilityTimeout 
     };

@@ -2,11 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 
 
 import Loader from "../components/Loader";
-import Order from "../components/Order";
-
 import { useHttp } from "../hooks/http.hook";
 import { ChangedContext } from "../context/ChangedContext";
-import Modal from "../components/Modal";
+import OrderWithModal from "../components/OrderWithModal";
 
 
 function ConsummerPage() {
@@ -49,8 +47,7 @@ function ConsummerPage() {
                   {list.length===0 ? <p>No orders</p>:
                   list.map((e,i)=>{
                     return <React.Fragment key={i}>
-                              <Order key={e._id} {...e} onclick_handler={handleOpenModal}/>                                
-                              <Modal key={i/1000} order={e} onclick_handler={handleCloseModal} visible={showModal}/>                              
+                              <OrderWithModal key={e._id} {...e} onclick_handler={handleOpenModal}/> 
                            </React.Fragment>
                 })
                   }

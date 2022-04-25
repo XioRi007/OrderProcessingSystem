@@ -10,6 +10,7 @@ import { ChangedContext } from "./context/ChangedContext";
 import ConsummerPage from "./pages/ConsummerPage";
 import Loader from "./components/Loader";
 import { useHttp } from "./hooks/http.hook";
+import { ModalProvider } from "react-modal-hook";
 
 function App() {
   const [changed, setChanged] = useState(true);
@@ -21,6 +22,7 @@ function App() {
   return (
     <ChangedContext.Provider value={{changed, setChanged, notify_error, notify_success}}>
     <div className="App">
+      <ModalProvider>
     <Router>
       <Header/>
       <ToastContainer/>
@@ -36,6 +38,7 @@ function App() {
       
       <Footer/>
     </Router>
+    </ModalProvider>
     </div>
     </ChangedContext.Provider>
     
